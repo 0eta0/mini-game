@@ -9,7 +9,8 @@
         :style="`margin-left: ${item.x}px; margin-top: ${item.y}px`"
       ></div>
     </div>
-    <label for="player-input" class="player" ref="player"></label>
+    <label for="player-input" class="input-label"></label>
+    <div class="player" ref="player"></div>
     <input id="player-input" type="range" min="0" max="1000" @keyup="barMove" />
     <div class="result-container">
       <div class="level" v-text="`Level : ${level}`"></div>
@@ -45,8 +46,8 @@ export default {
         {
           x: window.innerWidth / 2 - 25,
           y: 0,
-          vecX: -1,
-          vecY: 2,
+          vecX: -2,
+          vecY: 4,
           alive: true
         }
       ],
@@ -54,8 +55,8 @@ export default {
         {
           x: window.innerWidth / 2 - 25,
           y: 0,
-          vecX: -1,
-          vecY: 2,
+          vecX: -2,
+          vecY: 4,
           alive: true
         }
       ]
@@ -129,13 +130,13 @@ export default {
     },
     timeCount: function() {
       this.time += 1;
-      if (parseInt(this.time / 60) + 1 > this.level) {
+      if (parseInt(this.time / 30) + 1 > this.level) {
         this.balls.forEach(ball => {
           ball.vecX *= 1.2;
           ball.vecY *= 1.2;
         });
       }
-      this.level = parseInt(this.time / 60) + 1;
+      this.level = parseInt(this.time / 30) + 1;
       this.point += this.level * 10;
     }
   }
@@ -178,6 +179,15 @@ export default {
     bottom: 0;
     left: 0;
     margin-left: -100px;
+  }
+
+  .input-label {
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    top: 0;
+    left: 0;
+    z-index: 100px;
   }
 
   .result-container {

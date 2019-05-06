@@ -10,7 +10,7 @@ export default new Router({
     {
       path: "/",
       name: "simpleArkanoid",
-      component: () => require("@/views/SimpleArkanoid.vue")
+      component: () => import("@/views/SimpleArkanoid.vue")
     }
   ]
 });
