@@ -1,4 +1,4 @@
-# 15sec-game
+# mini-game
 
 ## Project setup
 ```
