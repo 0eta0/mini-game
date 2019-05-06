@@ -123,6 +123,8 @@ export default {
         parseInt(this.width / 3) < 400 ? parseInt(this.width / 3) : 400;
       this.$refs["player"].style.width = `${this.barWidth}px`;
       this.pRange.top = this.height - 150;
+      this.initPRange.PRange = this.height - 150;
+      this.initBalls.top = this.height - 150;
     },
     barMove: function(key) {
       if (key === "ArrowLeft") {
