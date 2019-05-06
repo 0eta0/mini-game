@@ -11,10 +11,16 @@
     </div>
     <label for="player-input" class="input-label"></label>
     <div class="player" ref="player"></div>
-    <input id="player-input" type="range" min="0" max="1000" @keyup="barMove" />
+    <input
+      id="player-input"
+      type="range"
+      min="0"
+      max="1000"
+      @keyup="barMove($event.key)"
+    />
     <div class="result-container">
       <div class="level" v-text="`Level : ${level}`"></div>
-      <div class="point" v-text="`Point : ${point}`"></div>
+      <div class="point" v-text="`Score : ${point}`"></div>
       <div
         class="time"
         v-text="`Time : ${parseInt(time / 60)} : ${time % 60}`"
@@ -37,9 +43,15 @@ export default {
       ballTimer: null,
       gameTimer: null,
       pPosition: 0,
+      barWith: 300,
+      initPRange: {
+        left: 0,
+        right: 0,
+        top: window.innerHeight - 150
+      },
       pRange: {
         left: 0,
-        right: 300,
+        right: 0,
         top: window.innerHeight - 150
       },
       initBalls: [
@@ -64,16 +76,20 @@ export default {
   },
   watch: {
     pPosition: function() {
-      this.pRange.left = ((this.width - 300) / 1000) * this.pPosition;
-      this.pRange.right = this.pRange.left + 300;
+      this.pRange.left = ((this.width - this.barWidth) / 1000) * this.pPosition;
+      this.pRange.right = this.pRange.left + this.barWidth;
       this.$refs["player"].style.marginLeft = `${this.pRange.left}px`;
     },
     fBalls: function() {
       if (this.fBalls.length < 1) {
         clearInterval(this.gameTimer);
         clearInterval(this.ballTimer);
-        this.balls = this.initBalls;
         Swal.fire("Your score!", `${this.point}`).then(() => {
+          this.balls = this.initBalls;
+          this.pRange = this.initPRange;
+          this.point = 0;
+          this.level = 1;
+          this.time = 0;
           Swal.fire("Press button to start").then(() => {
             this.gameTimer = setInterval(this.timeCount, 1000);
             this.ballTimer = setInterval(this.ballMove, 10);
@@ -87,17 +103,31 @@ export default {
       return this.balls.filter(ba => ba.alive);
     }
   },
+  created() {
+    window.addEventListener("resize", this.handleResize);
+  },
   mounted() {
+    this.barWidth =
+      parseInt(this.width / 3) < 400 ? parseInt(this.width / 3) : 400;
+    this.$refs["player"].style.width = `${this.barWidth}px`;
     Swal.fire("Press button to start").then(() => {
       this.gameTimer = setInterval(this.timeCount, 1000);
       this.ballTimer = setInterval(this.ballMove, 10);
     });
   },
   methods: {
-    barMove: function(event) {
-      if (event.key === "ArrowLeft") {
+    handleResize: function() {
+      this.width = window.innerWidth;
+      this.height = window.innerHeight;
+      this.barWidth =
+        parseInt(this.width / 3) < 400 ? parseInt(this.width / 3) : 400;
+      this.$refs["player"].style.width = `${this.barWidth}px`;
+      this.pRange.top = this.height - 150;
+    },
+    barMove: function(key) {
+      if (key === "ArrowLeft") {
         this.pPosition = this.pPosition - 100 > -1 ? this.pPosition - 100 : 0;
-      } else if (event.key === "ArrowRight") {
+      } else if (key === "ArrowRight") {
         this.pPosition =
           this.pPosition + 100 < 1001 ? this.pPosition + 100 : 1000;
       }
@@ -116,7 +146,7 @@ export default {
           ball.vecY *= -1;
           let diff = asX - this.pRange.left;
           if (diff >= 250) {
-            ball.vecX *= 1 + (300 - diff) / 50;
+            ball.vecX *= 1 + (this.barWidth - diff) / 50;
           }
           if (diff < 50) {
             ball.vecX *= 1 + diff / 50;
@@ -197,30 +227,26 @@ export default {
     width: 100vw;
     height: 50px;
     bottom: 0;
+    font-size: 15px;
+    font-weight: bold;
 
     .level {
-      width: 300px;
+      width: 30vw;
       height: 50px;
       line-height: 50px;
       text-align: center;
-      font-size: 30px;
-      font-weight: bold;
     }
     .point {
-      width: 300px;
+      width: 30vw;
       height: 50px;
       line-height: 50px;
       text-align: center;
-      font-size: 30px;
-      font-weight: bold;
     }
     .time {
-      width: 300px;
+      width: 30vw;
       height: 50px;
       line-height: 50px;
       text-align: center;
-      font-size: 30px;
-      font-weight: bold;
     }
   }
 }
